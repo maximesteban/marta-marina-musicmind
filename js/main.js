@@ -81,16 +81,29 @@
   /* ---------- Mobile menu ---------- */
   const toggle = $('#navToggle');
   const navLinks = $('#navLinks');
-  const closeMenu = () => {
-    document.body.classList.remove('menu-open');
-    toggle.setAttribute('aria-expanded', 'false');
+  const setMenu = (open) => {
+    document.body.classList.toggle('menu-open', open);
+    document.body.classList.toggle('no-scroll', open);
+    // never leave the header transformed under an open menu (see CSS note)
+    if (open && header) header.classList.remove('hidden');
+    if (toggle) {
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+    }
   };
+  const closeMenu = () => setMenu(false);
   if (toggle) {
     toggle.addEventListener('click', () => {
-      const open = document.body.classList.toggle('menu-open');
-      toggle.setAttribute('aria-expanded', String(open));
+      setMenu(!document.body.classList.contains('menu-open'));
     });
     $$('a', navLinks).forEach((a) => a.addEventListener('click', closeMenu));
+    // Escape closes; leaving the mobile breakpoint resets the menu state
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.body.classList.contains('menu-open')) closeMenu();
+    });
+    window.matchMedia('(min-width: 861px)').addEventListener('change', (e) => {
+      if (e.matches) closeMenu();
+    });
   }
 
   /* ---------- Scroll reveal ---------- */
@@ -153,22 +166,30 @@
   const modalClose = $('#modalClose');
   let lastFocused = null;
 
-  /* Per-panel personality: width variant + accent colour (keeps it from feeling monotonous) */
+  /* Per-panel personality: width variant + accent colour + entry side.
+     On desktop the `side` breaks the monotony (right/left/bottom/top); on mobile
+     every drawer falls back to a full-screen sheet (see CSS). Wizard groups
+     (p1–p5, prog1–prog3) must share one side so stepping between them doesn't jump. */
   const PANEL = {
-    p1:            { variant: 'pillar',  accent: '#2F4A55' }, // Identidad — deep ocean
-    p2:            { variant: 'pillar',  accent: '#5E7A87' }, // Coherencia — steel
-    p3:            { variant: 'pillar',  accent: '#A98D6B' }, // Valores — bronze
-    p4:            { variant: 'pillar',  accent: '#6E8A96' }, // Vínculo — dusty
-    p5:            { variant: 'pillar',  accent: '#3C5A5E' }, // Dirección — teal
-    'm-musicmind': { variant: 'wide',    accent: '#5E7A87' },
-    'm-marta':     { variant: 'wide',    accent: '#3C5A5E' },
-    prog1:         { variant: 'program', accent: '#A98D6B' },
-    prog2:         { variant: 'program', accent: '#5E7A87' },
-    prog3:         { variant: 'program', accent: '#3C5A5E' },
-    contact:       { variant: 'contact', accent: '#2F4A55' },
-    legal:         { variant: 'wide',    accent: '#3C5A5E' },
-    privacy:       { variant: 'wide',    accent: '#3C5A5E' },
-    cookies:       { variant: 'wide',    accent: '#3C5A5E' }
+    p1:            { variant: 'pillar',  accent: '#2F4A55', side: 'right'  }, // Identidad — deep ocean
+    p2:            { variant: 'pillar',  accent: '#5E7A87', side: 'right'  }, // Coherencia — steel
+    p3:            { variant: 'pillar',  accent: '#A98D6B', side: 'right'  }, // Valores — bronze
+    p4:            { variant: 'pillar',  accent: '#6E8A96', side: 'right'  }, // Vínculo — dusty
+    p5:            { variant: 'pillar',  accent: '#3C5A5E', side: 'right'  }, // Dirección — teal
+    'm-musicmind': { variant: 'wide',    accent: '#5E7A87', side: 'left'   },
+    'm-marta':     { variant: 'wide',    accent: '#3C5A5E', side: 'bottom' },
+    prog1:         { variant: 'program', accent: '#A98D6B', side: 'bottom' },
+    prog2:         { variant: 'program', accent: '#5E7A87', side: 'bottom' },
+    prog3:         { variant: 'program', accent: '#3C5A5E', side: 'bottom' },
+    story1:        { variant: 'wide',    accent: '#2F4A55', side: 'right'  }, // carousel cards
+    story2:        { variant: 'wide',    accent: '#5E7A87', side: 'right'  },
+    story3:        { variant: 'wide',    accent: '#A98D6B', side: 'right'  },
+    story4:        { variant: 'wide',    accent: '#6E8A96', side: 'right'  },
+    story5:        { variant: 'wide',    accent: '#3C5A5E', side: 'right'  },
+    contact:       { variant: 'contact', accent: '#2F4A55', side: 'right'  },
+    legal:         { variant: 'wide',    accent: '#3C5A5E', side: 'bottom' }, // footer → entra desde abajo
+    privacy:       { variant: 'wide',    accent: '#3C5A5E', side: 'bottom' },
+    cookies:       { variant: 'wide',    accent: '#3C5A5E', side: 'bottom' }
   };
 
   const IG_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>';
@@ -180,9 +201,11 @@
     '<path fill="#2A363B" d="M115.29,114.97l-.14-47.2-26.88,28.69c4.1,3.85,6.71,7.62,6.75,13.3.03,3.31-.93,6.23-3,8.88-5.97,7.66-17.3,7.72-23.19,1.03-2.62-2.98-4.01-6.72-3.81-10.57.31-5.89,3.22-8.78,6.86-12.89-.16-.19-26.84-28.7-26.84-28.7l-.24,47.58c0,2.38-1.83,3.85-3.94,4.63-2.72,1-7.59-.98-7.6-4.54l-.14-62.1c0-1.65,1.03-3.34,2.11-4.19,3.31-2.62,7.32-1.51,9.98,1.42l35.03,38.17,34.16-37.66c2.71-3.14,6.75-4.63,10.24-1.98,1.78,1.35,2.18,3.72,2.18,5.93l-.13,60.24c0,3.23-3.89,5.27-6.62,4.89-2.46-.35-4.8-2.11-4.81-4.92ZM80.09,102.94c-.41.02-4.93,3.38-4.76,7.07.1,2.28,1.64,3.77,3.35,4.34,1.96.65,4.01-.13,5.1-1.48,3.84-4.73-3.37-9.95-3.69-9.93Z"/>' +
     '<circle fill="#CCC2B8" cx="80.2" cy="46.68" r="11.23"/></svg>';
 
+  // pillars open the full-width fold-out accordion instead of the side drawer
+  const PILLARS_LIST = ['p1', 'p2', 'p3', 'p4', 'p5'];
+
   // sequential panels → wizard navigation (move through them without closing)
   const GROUPS = [
-    ['p1', 'p2', 'p3', 'p4', 'p5'],
     ['prog1', 'prog2', 'prog3']
   ];
   function groupOf(id) {
@@ -248,7 +271,7 @@
     el.className = 'p-brand';
     el.innerHTML = '<span class="p-brand__name">Marta Marina · MusicMind</span>' +
       '<div class="p-social">' +
-        '<a href="https://instagram.com/" target="_blank" rel="noopener" aria-label="Instagram">' + IG_SVG + '</a>' +
+        '<a href="https://www.instagram.com/martamarina.musicmind/" target="_blank" rel="noopener" aria-label="Instagram">' + IG_SVG + '</a>' +
         '<a href="https://tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok">' + TT_SVG + '</a>' +
         '<a href="mailto:hola@martamarina.com" aria-label="Email">' + MAIL_SVG + '</a>' +
       '</div>';
@@ -265,6 +288,7 @@
     const group = groupOf(id);
 
     modal.dataset.variant = cfg.variant || '';
+    modalWrap.dataset.side = cfg.side || 'right';
     modal.style.setProperty('--panel-accent', cfg.accent || '#5E7A87');
 
     modalAside.className = 'modal__aside';
@@ -287,6 +311,8 @@
   }
 
   function openModal(id) {
+    const pIdx = PILLARS_LIST.indexOf(id);
+    if (pIdx > -1) { openPillars(pIdx); return; }
     if (!populate(id)) return;
     lastFocused = document.activeElement;
     overlay.classList.add('open');
@@ -318,8 +344,182 @@
     if (lastFocused) setTimeout(() => lastFocused.focus(), 0);
   }
 
-  $$('[data-modal]').forEach((btn) => {
-    btn.addEventListener('click', () => openModal(btn.dataset.modal));
+  /* =========================================================
+     PILLARS ACCORDION — full-screen "old map" fold-out
+     The 5 pilares live as vertical folds; the active one unfolds and
+     the rest stay as spines. Advancing folds one / unfolds the next.
+     On mobile it flips to a vertical accordion (see CSS) so it still
+     fills the screen. Built lazily from the existing tpl-p1..p5.
+     ========================================================= */
+  let pillBuilt = false;
+  let pillOverlay, pillStage, pillPos, pillPrev, pillNext, pillClose, pillCta;
+  let pillPanels = [], pillDots = [];
+  let pillCurrent = 0, pillLastFocused = null;
+
+  const ARROW = (path, label) =>
+    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="' + path + '"/></svg>';
+
+  function buildPillars() {
+    if (pillBuilt) return;
+
+    pillOverlay = document.createElement('div');
+    pillOverlay.className = 'pill-overlay';
+    pillOverlay.id = 'pillOverlay';
+
+    pillStage = document.createElement('div');
+    pillStage.className = 'pill-stage';
+    pillStage.setAttribute('role', 'dialog');
+    pillStage.setAttribute('aria-modal', 'true');
+    pillStage.setAttribute('aria-label', 'El método · los 5 pilares');
+
+    pillClose = document.createElement('button');
+    pillClose.type = 'button';
+    pillClose.className = 'pill-close';
+    pillClose.setAttribute('aria-label', 'Cerrar');
+    pillClose.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    pillClose.addEventListener('click', closePillars);
+
+    const track = document.createElement('div');
+    track.className = 'pill-track';
+
+    PILLARS_LIST.forEach((pid, i) => {
+      const tpl = document.getElementById('tpl-' + pid);
+      const src = tpl.content.cloneNode(true).querySelector('div');
+      const eyebrow = src.dataset.eyebrow || ('Pilar 0' + (i + 1));
+      const num = src.dataset.num || String(i + 1).padStart(2, '0');
+      const title = (src.querySelector('h2') || {}).textContent || '';
+      const accent = (PANEL[pid] || {}).accent || '#5E7A87';
+      const dn = src.querySelector('.d-num'); if (dn) dn.remove();
+
+      const panel = document.createElement('div');
+      panel.className = 'pill-panel';
+      panel.style.setProperty('--acc', accent);
+      panel.style.setProperty('--i', i);
+
+      const spine = document.createElement('div');
+      spine.className = 'pill-spine';
+      spine.innerHTML = '<span class="pill-spine__num">' + num + '</span>' +
+        '<span class="pill-spine__title">' + title + '</span>' +
+        '<span class="pill-spine__dot"></span>';
+
+      const full = document.createElement('div');
+      full.className = 'pill-full';
+      full.innerHTML = '<span class="pill-full__num" aria-hidden="true">' + num + '</span>' +
+        '<span class="pill-eyebrow">' + MARK_SVG + '<em>' + eyebrow + '</em></span>';
+      const body = document.createElement('div');
+      body.className = 'pill-body';
+      while (src.firstChild) body.appendChild(src.firstChild);
+      full.appendChild(body);
+
+      panel.append(spine, full);
+      panel.addEventListener('click', (e) => {
+        // let links/buttons inside the open panel work normally
+        if (panel.classList.contains('active') && e.target.closest('a, button')) return;
+        setPillar(i);
+      });
+      track.appendChild(panel);
+      pillPanels.push(panel);
+    });
+
+    // control bar (brand · position · dots · CTA · arrows)
+    const bar = document.createElement('div');
+    bar.className = 'pill-bar';
+
+    const brand = document.createElement('span');
+    brand.className = 'pill-brand';
+    brand.textContent = 'Marta Marina · MusicMind';
+
+    const wiz = document.createElement('div');
+    wiz.className = 'pill-wiz';
+
+    pillPos = document.createElement('span');
+    pillPos.className = 'pill-pos';
+
+    const dots = document.createElement('div');
+    dots.className = 'pill-dots';
+    PILLARS_LIST.forEach((pid, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', 'Ir al pilar ' + (i + 1));
+      b.addEventListener('click', () => setPillar(i));
+      dots.appendChild(b);
+      pillDots.push(b);
+    });
+
+    pillCta = document.createElement('a');
+    pillCta.className = 'btn pill-cta';
+    pillCta.href = '#contacto';
+    pillCta.innerHTML = 'Empezar por aquí <span class="arrow">→</span>';
+    pillCta.addEventListener('click', (e) => { e.preventDefault(); closePillars(); openModal('contact'); });
+
+    const nav = document.createElement('div');
+    nav.className = 'pill-nav';
+    pillPrev = document.createElement('button');
+    pillPrev.type = 'button'; pillPrev.className = 'pill-arrow';
+    pillPrev.setAttribute('aria-label', 'Pilar anterior');
+    pillPrev.innerHTML = ARROW('M10 2 4 8l6 6');
+    pillPrev.addEventListener('click', () => setPillar(pillCurrent - 1));
+    pillNext = document.createElement('button');
+    pillNext.type = 'button'; pillNext.className = 'pill-arrow';
+    pillNext.setAttribute('aria-label', 'Pilar siguiente');
+    pillNext.innerHTML = ARROW('M6 2l6 6-6 6');
+    pillNext.addEventListener('click', () => setPillar(pillCurrent + 1));
+    nav.append(pillPrev, pillNext);
+
+    wiz.append(pillPos, dots, pillCta, nav);
+    bar.append(brand, wiz);
+
+    pillStage.append(pillClose, track, bar);
+    pillOverlay.appendChild(pillStage);
+    document.body.appendChild(pillOverlay);
+    pillBuilt = true;
+  }
+
+  function setPillar(i) {
+    i = Math.max(0, Math.min(pillPanels.length - 1, i));
+    pillCurrent = i;
+    const accent = (PANEL[PILLARS_LIST[i]] || {}).accent || '#5E7A87';
+    pillStage.style.setProperty('--acc', accent);
+    pillPanels.forEach((p, idx) => p.classList.toggle('active', idx === i));
+    pillDots.forEach((d, idx) => d.classList.toggle('on', idx === i));
+    pillPos.innerHTML = '<b>' + String(i + 1).padStart(2, '0') + '</b> / ' + String(pillPanels.length).padStart(2, '0');
+    pillPrev.disabled = i === 0;
+    pillNext.disabled = i === pillPanels.length - 1;
+    const af = pillPanels[i].querySelector('.pill-full');
+    if (af) af.scrollTop = 0;
+  }
+
+  function openPillars(i) {
+    buildPillars();
+    pillLastFocused = document.activeElement;
+    setPillar(i || 0);
+    document.body.classList.add('no-scroll');
+    // force reflow so the entrance transition runs from the folded state
+    void pillStage.offsetWidth;
+    pillOverlay.classList.add('open', 'intro');
+    setTimeout(() => pillOverlay.classList.remove('intro'), 900);
+    setTimeout(() => pillClose.focus(), 120);
+  }
+
+  function closePillars() {
+    if (!pillOverlay) return;
+    pillOverlay.classList.remove('open');
+    document.body.classList.remove('no-scroll');
+    if (pillLastFocused) setTimeout(() => pillLastFocused.focus(), 0);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (!pillOverlay || !pillOverlay.classList.contains('open')) return;
+    if (e.key === 'Escape') { closePillars(); return; }
+    if (e.key === 'ArrowRight') { e.preventDefault(); setPillar(pillCurrent + 1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); setPillar(pillCurrent - 1); }
+  });
+
+  // delegation → also catches [data-modal] triggers inside dynamically cloned templates
+  // (e.g. the "política de privacidad" link inside the contact / newsletter consent)
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-modal]');
+    if (btn) { e.preventDefault(); openModal(btn.dataset.modal); }
   });
   overlay.addEventListener('click', closeModal);
   modalClose.addEventListener('click', closeModal);
@@ -434,14 +634,16 @@
       ticking = false;
       const max = maxScroll();
       const x = track.scrollLeft;
-      if (prev) prev.disabled = x <= 1;
-      if (next) next.disabled = x >= max - 1;
+      const atStart = x <= 1, atEnd = x >= max - 1;
+      if (prev) prev.disabled = atStart;
+      if (next) next.disabled = atEnd;
+      // fade each edge only while there are hidden cards on that side (first/last sit flush)
+      track.style.setProperty('--fade-l', atStart ? '0px' : 'var(--fade)');
+      track.style.setProperty('--fade-r', atEnd ? '0px' : 'var(--fade)');
       if (bar) {
-        // bar length tracks how much of the reel is on screen; position tracks scroll
-        const visible = track.clientWidth / track.scrollWidth;
-        const progressed = max > 0 ? x / max : 0;
-        bar.style.width = Math.min(visible, 1) * 100 + '%';
-        bar.style.transform = `translateX(${progressed * (100 / Math.min(visible, 1) - 100)}%)`;
+        // simple left-anchored fill: 0 → 100% of scroll travelled (full when nothing to scroll)
+        const progressed = max > 0 ? x / max : 1;
+        bar.style.width = Math.round(progressed * 100) + '%';
       }
     };
     const onScroll = () => { if (!ticking) { requestAnimationFrame(sync); ticking = true; } };
@@ -462,11 +664,23 @@
   })();
 
   /* =========================================================
-     NEWSLETTER  (Google Apps Script)
+     ⚙️  SETTINGS · Configura aquí la conexión
+     ---------------------------------------------------------
+     El formulario de contacto Y la newsletter usan el MISMO
+     endpoint de Google Apps Script (apps-script/Code.gs).
      ========================================================= */
-  // 1) Despliega apps-script/Code.gs como Web App
-  // 2) Pega aquí la URL /exec que te da Google:
-  const NEWSLETTER_ENDPOINT = ''; // <-- PEGA AQUÍ TU URL DE APPS SCRIPT
+  const SETTINGS = {
+    // Pega SOLO el ID del despliegue de Apps Script.
+    // Lo encuentras en la URL que te da Google al implementar:
+    //   https://script.google.com/macros/s/AQUÍ_VA_EL_ID/exec
+    // Déjalo vacío ('') para probar en modo demo (no envía nada).
+    APPS_SCRIPT_ID: 'AKfycbw0wveMBW_nT-1N_zcVuboW_LnY4MyD0sXqHkJFsyhP1kn5Q7ZrqoP2Uo8zgeldKzxyrA',
+  };
+
+  // No hace falta tocar esto: arma la URL /exec a partir del ID.
+  const NEWSLETTER_ENDPOINT = SETTINGS.APPS_SCRIPT_ID
+    ? `https://script.google.com/macros/s/${SETTINGS.APPS_SCRIPT_ID}/exec`
+    : '';
 
   const form = $('#newsForm');
   const emailInput = $('#newsEmail');
@@ -484,7 +698,9 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = emailInput.value.trim();
+      const newsConsent = document.getElementById('newsConsent');
       if (!validEmail(email)) { setMsg('Introduce un email válido.', 'err'); emailInput.focus(); return; }
+      if (newsConsent && !newsConsent.checked) { setMsg('Marca la casilla para suscribirte.', 'err'); newsConsent.focus(); return; }
 
       newsBtn.disabled = true;
       const original = newsBtn.innerHTML;
@@ -498,7 +714,7 @@
           setMsg('✓ ¡Gracias! (modo demo — configura el endpoint de Apps Script para recibir altas).', 'ok');
           form.reset();
         } else {
-          const body = new URLSearchParams({ email, source: 'web' });
+          const body = new URLSearchParams({ email, consent: 'true', source: 'web' });
           const res = await fetch(NEWSLETTER_ENDPOINT, { method: 'POST', body });
           const data = await res.json().catch(() => ({}));
           if (res.ok && data.result === 'success') {
@@ -533,9 +749,11 @@
       const cbtn = cform.querySelector('#contactBtn');
       const setC = (t, type) => { cmsg.textContent = t; cmsg.className = 'c-msg' + (type ? ' ' + type : ''); };
 
+      const consent = cform.elements.consent;
       if (!name) { setC('Dime tu nombre.', 'err'); cform.elements.name.focus(); return; }
       if (!validEmail(email)) { setC('Introduce un email válido.', 'err'); cform.elements.email.focus(); return; }
       if (message.length < 5) { setC('Cuéntame un poco más.', 'err'); cform.elements.message.focus(); return; }
+      if (consent && !consent.checked) { setC('Debes aceptar la política de privacidad.', 'err'); consent.focus(); return; }
 
       cbtn.disabled = true;
       const orig = cbtn.innerHTML;
@@ -548,7 +766,7 @@
           setC('✓ ¡Gracias! (modo demo — configura el endpoint de Apps Script para recibir mensajes).', 'ok');
           cform.reset();
         } else {
-          const body = new URLSearchParams({ type: 'contact', name, email, message, source: 'web' });
+          const body = new URLSearchParams({ type: 'contact', name, email, message, consent: 'true', source: 'web' });
           const res = await fetch(NEWSLETTER_ENDPOINT, { method: 'POST', body });
           const data = await res.json().catch(() => ({}));
           if (res.ok && data.result === 'success') {
@@ -592,6 +810,99 @@
     const reject = $('#cookieReject');
     if (accept) accept.addEventListener('click', () => setChoice('accepted'));
     if (reject) reject.addEventListener('click', () => setChoice('rejected'));
+  }
+
+  /* =========================================================
+     NEWSLETTER POP-UP  (no promo de inicio · aparece tarde)
+     ---------------------------------------------------------
+     Se muestra tras un tiempo O tras X clics, lo que ocurra antes.
+     No reaparece si el visitante ya se suscribió o lo cerró.
+     ========================================================= */
+  const nlPop = $('#nlPop');
+  if (nlPop) {
+    // ---- Ajustes ----
+    const NL_KEY    = 'mm-nl-popup'; // recuerda 'subscribed' | 'dismissed'
+    const NL_DELAY  = 25000;         // aparece a los 25 s…
+    const NL_CLICKS = 8;             // …o tras 8 clics en la página (lo que pase antes)
+    // -----------------
+
+    let nlShown = false, nlClicks = 0, nlTimer = null;
+    let nlStored = null;
+    try { nlStored = localStorage.getItem(NL_KEY); } catch (_) {}
+
+    const cookieVisible = () => { const c = $('#cookie'); return c && !c.hidden; };
+
+    const onNlClick = (e) => {
+      if (nlPop.contains(e.target)) return; // los clics dentro del propio popup no cuentan
+      if (++nlClicks >= NL_CLICKS) showNlPop();
+    };
+
+    function showNlPop() {
+      if (nlShown || nlStored) return;
+      // no pisar el banner de cookies: si está visible, reintenta en unos segundos
+      if (cookieVisible()) { nlTimer = setTimeout(showNlPop, 4000); return; }
+      nlShown = true;
+      if (nlTimer) clearTimeout(nlTimer);
+      document.removeEventListener('click', onNlClick);
+      nlPop.hidden = false;
+      requestAnimationFrame(() => nlPop.classList.add('show'));
+    }
+
+    const hideNlPop = (remember) => {
+      nlPop.classList.remove('show');
+      setTimeout(() => { nlPop.hidden = true; }, 700);
+      if (remember) { try { localStorage.setItem(NL_KEY, remember); } catch (_) {} }
+    };
+
+    if (!nlStored) {
+      nlTimer = setTimeout(showNlPop, NL_DELAY);
+      document.addEventListener('click', onNlClick);
+
+      const nlClose = $('#nlPopClose');
+      if (nlClose) nlClose.addEventListener('click', () => hideNlPop('dismissed'));
+
+      const nlForm = $('#nlPopForm');
+      const nlEmail = $('#nlPopEmail');
+      const nlBtn = $('#nlPopBtn');
+      const nlMsg = $('#nlPopMsg');
+      const nlConsent = $('#nlPopConsent');
+      const setNl = (t, type) => { nlMsg.textContent = t; nlMsg.className = 'nlpop__msg' + (type ? ' ' + type : ''); };
+
+      if (nlForm) {
+        nlForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const email = nlEmail.value.trim();
+          if (!validEmail(email)) { setNl('Introduce un email válido.', 'err'); nlEmail.focus(); return; }
+          if (nlConsent && !nlConsent.checked) { setNl('Marca la casilla para suscribirte.', 'err'); nlConsent.focus(); return; }
+
+          nlBtn.disabled = true;
+          const orig = nlBtn.innerHTML;
+          nlBtn.innerHTML = 'Enviando…';
+          setNl('', '');
+
+          try {
+            if (!NEWSLETTER_ENDPOINT) {
+              await new Promise((r) => setTimeout(r, 700));
+              setNl('✓ ¡Gracias! (modo demo).', 'ok');
+            } else {
+              const body = new URLSearchParams({ email, consent: 'true', source: 'popup' });
+              const res = await fetch(NEWSLETTER_ENDPOINT, { method: 'POST', body });
+              const data = await res.json().catch(() => ({}));
+              if (!(res.ok && data.result === 'success')) {
+                setNl(data.message || 'Algo ha fallado. Inténtalo de nuevo.', 'err');
+                nlBtn.disabled = false; nlBtn.innerHTML = orig; return;
+              }
+              setNl('✓ ¡Listo! Te has suscrito.', 'ok');
+            }
+            try { localStorage.setItem(NL_KEY, 'subscribed'); } catch (_) {}
+            setTimeout(() => hideNlPop(), 1600);
+          } catch (_) {
+            setNl('No se pudo conectar. Inténtalo más tarde.', 'err');
+            nlBtn.disabled = false; nlBtn.innerHTML = orig;
+          }
+        });
+      }
+    }
   }
 
 })();

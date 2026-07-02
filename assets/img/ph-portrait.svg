@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5E7A87"/>
+      <stop offset="1" stop-color="#2A363B"/>
+    </linearGradient>
+    <radialGradient id="light" cx="0.5" cy="0.34" r="0.6">
+      <stop offset="0" stop-color="#DCE6EA" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#DCE6EA" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+  </defs>
+  <rect width="800" height="1000" fill="url(#g)"/>
+  <rect width="800" height="1000" fill="url(#light)"/>
+  <g fill="none" stroke="#DCE6EA" stroke-width="1" opacity="0.16">
+    <circle cx="400" cy="360" r="120"/><circle cx="400" cy="360" r="185"/><circle cx="400" cy="360" r="250"/>
+  </g>
+  <rect width="800" height="1000" filter="url(#n)" opacity="0.05"/>
+</svg>
