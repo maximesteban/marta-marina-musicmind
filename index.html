@@ -5,14 +5,54 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Marta Marina · MusicMind — Bienestar emocional para artistas</title>
 <meta name="description" content="MusicMind, de Marta Marina (ex Universal Music): mentoring y consultoría de bienestar emocional para artistas con alta exposición mediática. Un método propio de 5 pilares para alinear identidad, coherencia y valores.">
+<link rel="canonical" href="https://martamarina.com/">
+
+<!-- Open Graph -->
 <meta property="og:title" content="Marta Marina · MusicMind">
 <meta property="og:description" content="Bienestar emocional para artistas con alta exposición mediática. De lo interno a lo externo.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://martamarina.com/">
+<meta property="og:locale" content="es_ES">
+<meta property="og:site_name" content="Marta Marina · MusicMind">
+<meta property="og:image" content="https://martamarina.com/assets/logos/LOGO%20MM-01.png">
+<meta property="og:image:alt" content="Marta Marina · MusicMind">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Marta Marina · MusicMind">
+<meta name="twitter:description" content="Bienestar emocional para artistas con alta exposición mediática. De lo interno a lo externo.">
+<meta name="twitter:image" content="https://martamarina.com/assets/logos/LOGO%20MM-01.png">
+
+<meta name="theme-color" content="#2F4A55">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="assets/logos/LOGO MM-01.png">
 <link rel="stylesheet" href="css/style.css">
+
+<!-- Structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "Marta Marina · MusicMind",
+  "description": "Mentoring y consultoría de bienestar emocional para artistas con alta exposición mediática. Un método propio de 5 pilares.",
+  "url": "https://martamarina.com/",
+  "image": "https://martamarina.com/assets/logos/LOGO%20MM-01.png",
+  "email": "hola@martamarina.com",
+  "areaServed": "ES",
+  "founder": {
+    "@type": "Person",
+    "name": "Marta Marina",
+    "jobTitle": "Mentora y consultora de bienestar emocional para artistas"
+  },
+  "sameAs": [
+    "https://instagram.com/",
+    "https://tiktok.com/"
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -34,6 +74,17 @@
       <a href="#marta" class="navlink">Marta</a>
       <a href="#contacto" class="navlink">Contacto</a>
       <a href="#newsletter" class="btn btn--ghost" data-magnetic>Newsletter</a>
+      <div class="nav__social">
+        <a href="https://instagram.com/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="https://tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.3 2 1.5 3.4 3.5 3.6v2.5c-1.3.1-2.5-.3-3.6-.9v6.3c0 3.2-2.4 5.5-5.4 5.5C7.8 22 5.5 19.8 5.5 17c0-2.7 2.2-4.9 5-4.9.3 0 .6 0 .9.1v2.6c-.3-.1-.6-.2-.9-.2-1.3 0-2.3 1-2.3 2.3 0 1.3 1 2.3 2.3 2.3 1.4 0 2.5-1.1 2.5-2.7V3h3.5z"/></svg>
+        </a>
+        <a href="mailto:hola@martamarina.com" aria-label="Email">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        </a>
+      </div>
     </div>
 
     <button class="nav__toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
@@ -74,7 +125,7 @@
     </div>
 
     <div class="hero__symbol" aria-hidden="true">
-      <div class="hero__rings" style="color:var(--dusty-blue)">
+      <div class="hero__rings">
         <svg viewBox="0 0 400 400" fill="none" stroke="currentColor" stroke-width="1">
           <circle cx="200" cy="200" r="62"/><circle cx="200" cy="200" r="112"/>
           <circle cx="200" cy="200" r="162"/><circle cx="200" cy="200" r="198"/>
@@ -105,60 +156,65 @@
   </div>
 </div>
 
-<!-- ============ BRAND STORY (editorial slider) ============ -->
-<section class="story" id="story" data-active="0" aria-label="La historia de la marca">
-  <div class="wrap story__inner">
-    <div class="story__count"><span id="storyCount">01</span><span class="bar"></span><span style="opacity:.4">06</span></div>
-
-    <div class="story__stage">
-      <div class="story__rings" style="color:#b39d86" aria-hidden="true">
-        <svg viewBox="0 0 400 400" fill="none" stroke="currentColor" stroke-width="0.8">
-          <circle cx="200" cy="200" r="58"/><circle cx="200" cy="200" r="104"/>
-          <circle cx="200" cy="200" r="150"/><circle cx="200" cy="200" r="196"/>
-          <line x1="200" y1="2" x2="200" y2="398"/><line x1="2" y1="200" x2="398" y2="200"/>
-          <line x1="60" y1="60" x2="340" y2="340"/><line x1="340" y1="60" x2="60" y2="340"/>
-          <circle cx="200" cy="4" r="4" fill="currentColor" stroke="none"/>
-          <circle cx="396" cy="200" r="4" fill="currentColor" stroke="none"/>
-          <circle cx="200" cy="396" r="4" fill="currentColor" stroke="none"/>
-          <circle cx="4" cy="200" r="4" fill="currentColor" stroke="none"/>
-        </svg>
+<!-- ============ CAROUSEL (editorial · horizontal) ============ -->
+<section class="carousel section-pad" id="story" aria-label="Historias">
+  <div class="wrap">
+    <div class="carousel__head reveal">
+      <div class="carousel__intro">
+        <span class="eyebrow eyebrow--spaced">Sección editable</span>
+        <h2>Un titular <em>que puedes cambiar.</em></h2>
       </div>
-
-      <div class="story__labels" aria-hidden="true">
-        <span class="lab lab--top">Una persona</span>
-        <span class="lab lab--left">Una inicial</span>
-        <span class="lab lab--right">Una nota<br>musical</span>
-      </div>
-
-      <div class="story__symbol" aria-hidden="true">
-        <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
-          <path fill="#2A363B" d="M115.29,114.97l-.14-47.2-26.88,28.69c4.1,3.85,6.71,7.62,6.75,13.3.03,3.31-.93,6.23-3,8.88-5.97,7.66-17.3,7.72-23.19,1.03-2.62-2.98-4.01-6.72-3.81-10.57.31-5.89,3.22-8.78,6.86-12.89-.16-.19-26.84-28.7-26.84-28.7l-.24,47.58c0,2.38-1.83,3.85-3.94,4.63-2.72,1-7.59-.98-7.6-4.54l-.14-62.1c0-1.65,1.03-3.34,2.11-4.19,3.31-2.62,7.32-1.51,9.98,1.42l35.03,38.17,34.16-37.66c2.71-3.14,6.75-4.63,10.24-1.98,1.78,1.35,2.18,3.72,2.18,5.93l-.13,60.24c0,3.23-3.89,5.27-6.62,4.89-2.46-.35-4.8-2.11-4.81-4.92ZM80.09,102.94c-.41.02-4.93,3.38-4.76,7.07.1,2.28,1.64,3.77,3.35,4.34,1.96.65,4.01-.13,5.1-1.48,3.84-4.73-3.37-9.95-3.69-9.93Z"/>
-          <path fill="#698392" d="M115.29,115.01l-.14-47.2-26.88,28.69c-2.83-2.93-8-7.99-8-7.99l34.16-37.66c2.71-3.14,6.75-4.63,10.24-1.98,1.78,1.35,2.18,3.72,2.18,5.93l-.13,60.24c0,3.23-3.89,5.27-6.62,4.89-2.46-.35-4.8-2.11-4.81-4.92Z"/>
-          <circle fill="#CCC2B8" cx="80.2" cy="46.68" r="11.23"/>
-        </svg>
-      </div>
-    </div>
-
-    <div>
-      <div class="story__phrases" id="storyPhrases" aria-live="polite">
-        <p class="story__phrase active">A veces una forma puede decir<br>más de una cosa <em>al mismo tiempo.</em></p>
-        <p class="story__phrase">Una inicial. Una persona. <em>Una nota.</em></p>
-        <p class="story__phrase">Porque la música no empieza en el sonido.<br>Empieza en <em>la persona.</em></p>
-        <p class="story__phrase">Identidad, coherencia y valores.<br>De lo interno a <em>lo externo.</em></p>
-        <p class="story__phrase">No es terapia. Es <em>dirección.</em></p>
-        <p class="story__phrase">Todo necesitaba sentirse <em>alineado.</em></p>
-      </div>
-
-      <div class="story__nav">
-        <button class="story__arrow" id="storyPrev" aria-label="Anterior">
+      <div class="carousel__ctrl">
+        <button type="button" class="carousel__arrow" id="carPrev" aria-label="Anterior" disabled>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 2 4 8l6 6"/></svg>
         </button>
-        <div class="story__dots" id="storyDots"></div>
-        <button class="story__arrow" id="storyNext" aria-label="Siguiente">
+        <button type="button" class="carousel__arrow" id="carNext" aria-label="Siguiente">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2l6 6-6 6"/></svg>
         </button>
       </div>
     </div>
+
+    <div class="carousel__viewport reveal" data-d="1" role="region" aria-label="Tarjetas — desliza para navegar">
+      <ul class="carousel__track" id="carTrack" tabindex="0" role="list">
+        <li class="c-card">
+          <span class="c-card__index">01</span>
+          <span class="c-card__tag">Etiqueta</span>
+          <h3 class="c-card__title">Título de la tarjeta</h3>
+          <p class="c-card__text">Aquí irá una descripción breve. Sustituye este texto por el contenido real cuando lo tengas listo.</p>
+          <span class="c-card__meta">Editable <span class="arrow">→</span></span>
+        </li>
+        <li class="c-card">
+          <span class="c-card__index">02</span>
+          <span class="c-card__tag">Etiqueta</span>
+          <h3 class="c-card__title">Título de la tarjeta</h3>
+          <p class="c-card__text">Aquí irá una descripción breve. Sustituye este texto por el contenido real cuando lo tengas listo.</p>
+          <span class="c-card__meta">Editable <span class="arrow">→</span></span>
+        </li>
+        <li class="c-card">
+          <span class="c-card__index">03</span>
+          <span class="c-card__tag">Etiqueta</span>
+          <h3 class="c-card__title">Título de la tarjeta</h3>
+          <p class="c-card__text">Aquí irá una descripción breve. Sustituye este texto por el contenido real cuando lo tengas listo.</p>
+          <span class="c-card__meta">Editable <span class="arrow">→</span></span>
+        </li>
+        <li class="c-card">
+          <span class="c-card__index">04</span>
+          <span class="c-card__tag">Etiqueta</span>
+          <h3 class="c-card__title">Título de la tarjeta</h3>
+          <p class="c-card__text">Aquí irá una descripción breve. Sustituye este texto por el contenido real cuando lo tengas listo.</p>
+          <span class="c-card__meta">Editable <span class="arrow">→</span></span>
+        </li>
+        <li class="c-card">
+          <span class="c-card__index">05</span>
+          <span class="c-card__tag">Etiqueta</span>
+          <h3 class="c-card__title">Título de la tarjeta</h3>
+          <p class="c-card__text">Aquí irá una descripción breve. Sustituye este texto por el contenido real cuando lo tengas listo.</p>
+          <span class="c-card__meta">Editable <span class="arrow">→</span></span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="carousel__progress" aria-hidden="true"><span id="carBar"></span></div>
   </div>
 </section>
 
@@ -167,7 +223,7 @@
   <div class="wrap">
     <div class="intro__grid">
       <div class="intro__col reveal">
-        <span class="eyebrow" style="display:inline-block;margin-bottom:20px">Qué es MusicMind</span>
+        <span class="eyebrow eyebrow--spaced">Qué es MusicMind</span>
         <p class="intro__big">
           Un espacio de acompañamiento donde la carrera de un artista se sostiene
           sobre algo más sólido que la <em>exposición</em>.
@@ -179,7 +235,7 @@
           bajo una alta presión mediática a ordenar lo que sienten, lo que proyectan y lo que deciden.
         </p>
         <p>
-          No es terapia. Es <b style="color:var(--ink);font-weight:500">mentoring y consultoría</b>
+          No es terapia. Es <b class="hl">mentoring y consultoría</b>
           enfocados al proyecto y al equipo: una mirada externa que entiende la industria y, a la vez,
           a la persona que la habita.
         </p>
@@ -238,7 +294,7 @@
 </section>
 
 <!-- ============ PROGRAMAS ============ -->
-<section class="prog section-pad" id="programas" style="background:var(--surface)">
+<section class="prog section-pad" id="programas">
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="eyebrow">Programas</span>
@@ -283,11 +339,11 @@
       </div>
       <div class="marta__col reveal" data-d="1">
         <span class="eyebrow">Quién es Marta</span>
-        <p class="marta__big" style="margin-top:18px">
+        <p class="marta__big mt-18">
           Viene <em>de dentro</em> de la industria. Y conoce su cara menos visible.
         </p>
         <p>
-          Tras años en <b style="color:#fff;font-weight:500">Universal Music</b>, Marta Marina conoce de
+          Tras años en <b class="hl">Universal Music</b>, Marta Marina conoce de
           primera mano la presión, el ritmo y las decisiones que rodean a un artista en su punto más alto
           de exposición.
         </p>
@@ -312,7 +368,7 @@
   <div class="wrap">
     <div class="news__card reveal">
       <span class="blob blob--1" aria-hidden="true"></span>
-      <span class="eyebrow" style="display:inline-block;margin-bottom:18px;position:relative">Newsletter</span>
+      <span class="eyebrow">Newsletter</span>
       <h2>Claves para sostenerte <em>en la exposición.</em></h2>
       <p>Reflexiones, herramientas y avances del método —directo a tu correo, sin ruido. Solo cuando hay algo que de verdad merece tu atención.</p>
       <form class="news__form" id="newsForm" novalidate>
@@ -333,9 +389,9 @@
     <div class="footer__top">
       <div class="footer__cta reveal">
         <span class="eyebrow">Contacto</span>
-        <h2 style="margin-top:18px">¿Hablamos de <em>tu proyecto?</em></h2>
+        <h2 class="mt-18">¿Hablamos de <em>tu proyecto?</em></h2>
         <a href="mailto:hola@martamarina.com" class="email link-underline">hola@martamarina.com</a>
-        <div style="margin-top:28px">
+        <div class="mt-28">
           <button class="btn btn--light" data-modal="contact" data-magnetic>Escríbeme <span class="arrow">→</span></button>
         </div>
       </div>
@@ -358,10 +414,24 @@
       <div class="footer__brand">
         <img class="footer__logo" src="assets/logos/LOGO MM-05.png" alt="Marta Marina · MusicMind">
       </div>
+      <nav class="footer__legal" aria-label="Enlaces legales">
+        <button type="button" data-modal="legal">Aviso legal</button>
+        <button type="button" data-modal="privacy">Política de privacidad</button>
+        <button type="button" data-modal="cookies">Política de cookies</button>
+      </nav>
       <span>© <span id="year"></span> Marta Marina · MusicMind — Bienestar emocional para artistas</span>
     </div>
   </div>
 </footer>
+
+<!-- ============ COOKIE CONSENT ============ -->
+<div class="cookie" id="cookie" role="dialog" aria-live="polite" aria-label="Aviso de cookies" hidden>
+  <p class="cookie__text">Usamos solo cookies técnicas necesarias para el funcionamiento del sitio. Consulta nuestra <button type="button" class="cookie__link" data-modal="cookies">Política de cookies</button>.</p>
+  <div class="cookie__actions">
+    <button type="button" class="btn btn--ghost" id="cookieReject">Rechazar</button>
+    <button type="button" class="btn" id="cookieAccept">Aceptar</button>
+  </div>
+</div>
 
 <!-- ============ OVERLAY + MODAL ============ -->
 <div class="overlay" id="overlay"></div>
@@ -418,7 +488,7 @@
   <!-- Pillars -->
   <template id="tpl-p1">
     <div data-eyebrow="Pilar 01" data-num="01" data-foot='[{"t":"Empezar por aquí","h":"#contacto","p":true}]'>
-      <span class="d-num reveal-d">01</span>
+      <span class="d-num">01</span>
       <h2 class="reveal-d">Identidad</h2>
       <p class="d-sub reveal-d">Quién eres cuando se apagan los focos.</p>
       <p class="reveal-d">Antes que el artista existe la persona. Este pilar trabaja el núcleo: qué te define más allá del personaje público, de las expectativas y de la última métrica.</p>
@@ -434,7 +504,7 @@
 
   <template id="tpl-p2">
     <div data-eyebrow="Pilar 02" data-num="02" data-foot='[{"t":"Empezar por aquí","h":"#contacto","p":true}]'>
-      <span class="d-num reveal-d">02</span>
+      <span class="d-num">02</span>
       <h2 class="reveal-d">Coherencia</h2>
       <p class="d-sub reveal-d">Que dentro y fuera digan lo mismo.</p>
       <p class="reveal-d">La incoherencia se nota. Cuando lo que muestras no coincide con lo que eres, aparece el desgaste —y el público, antes o después, lo percibe.</p>
@@ -450,7 +520,7 @@
 
   <template id="tpl-p3">
     <div data-eyebrow="Pilar 03" data-num="03" data-foot='[{"t":"Empezar por aquí","h":"#contacto","p":true}]'>
-      <span class="d-num reveal-d">03</span>
+      <span class="d-num">03</span>
       <h2 class="reveal-d">Valores</h2>
       <p class="d-sub reveal-d">La brújula que filtra cada decisión.</p>
       <p class="reveal-d">En la industria llegan muchas oportunidades. Sin valores claros, todas parecen buenas. Con ellos, sabes a qué dices que sí y, sobre todo, a qué dices que no.</p>
@@ -466,7 +536,7 @@
 
   <template id="tpl-p4">
     <div data-eyebrow="Pilar 04" data-num="04" data-foot='[{"t":"Empezar por aquí","h":"#contacto","p":true}]'>
-      <span class="d-num reveal-d">04</span>
+      <span class="d-num">04</span>
       <h2 class="reveal-d">Vínculo</h2>
       <p class="d-sub reveal-d">El entorno también te sostiene.</p>
       <p class="reveal-d">Ningún artista crece solo. El equipo, el management y las personas cercanas forman un sistema que puede sostenerte o desgastarte.</p>
@@ -482,7 +552,7 @@
 
   <template id="tpl-p5">
     <div data-eyebrow="Pilar 05" data-num="05" data-foot='[{"t":"Empezar por aquí","h":"#contacto","p":true}]'>
-      <span class="d-num reveal-d">05</span>
+      <span class="d-num">05</span>
       <h2 class="reveal-d">Dirección</h2>
       <p class="d-sub reveal-d">Claridad interna en movimiento.</p>
       <p class="reveal-d">Cuando los cuatro pilares anteriores se alinean, aparece la dirección: la capacidad de avanzar con propósito en lugar de reaccionar por inercia o por miedo.</p>
@@ -556,6 +626,72 @@
           <span class="c-msg" id="contactMsg" role="status" aria-live="polite"></span>
         </div>
       </form>
+    </div>
+  </template>
+
+  <template id="tpl-legal">
+    <div data-eyebrow="Legal">
+      <h2 class="reveal-d">Aviso <em>legal.</em></h2>
+      <p class="d-sub reveal-d">Información general y condiciones de uso.</p>
+      <p class="reveal-d">En cumplimiento del artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSI-CE), se ponen a disposición del usuario los siguientes datos identificativos del titular de este sitio web:</p>
+      <ul class="reveal-d">
+        <li><b>Titular:</b> Marta Marina <span class="dim">[nombre completo / razón social]</span></li>
+        <li><b>NIF / DNI:</b> <span class="dim">[NIF o DNI]</span></li>
+        <li><b>Domicilio:</b> <span class="dim">[dirección postal]</span></li>
+        <li><b>Correo electrónico:</b> <a class="link-underline" href="mailto:hola@martamarina.com">hola@martamarina.com</a></li>
+        <li><b>Nombre de dominio:</b> martamarina.com</li>
+      </ul>
+      <h4 class="reveal-d">Objeto</h4>
+      <p class="reveal-d">Este sitio web tiene como finalidad informar sobre los servicios de mentoring y consultoría MusicMind. El acceso y uso del sitio atribuye la condición de usuario e implica la aceptación de las presentes condiciones.</p>
+      <h4 class="reveal-d">Propiedad intelectual e industrial</h4>
+      <p class="reveal-d">Todos los contenidos del sitio (textos, imágenes, logotipos, diseño y código) son titularidad de Marta Marina o de terceros que han autorizado su uso, y están protegidos por la normativa de propiedad intelectual e industrial. Queda prohibida su reproducción, distribución o transformación sin autorización expresa.</p>
+      <h4 class="reveal-d">Responsabilidad</h4>
+      <p class="reveal-d">El titular no se hace responsable del uso indebido de los contenidos ni de los daños derivados del acceso al sitio. Se reserva el derecho a modificar o suspender el sitio y sus contenidos sin previo aviso.</p>
+      <h4 class="reveal-d">Legislación aplicable</h4>
+      <p class="reveal-d">Las presentes condiciones se rigen por la legislación española. Para cualquier controversia, las partes se someten a los juzgados y tribunales del domicilio del usuario.</p>
+      <p class="reveal-d dim">Última actualización: julio de 2026.</p>
+    </div>
+  </template>
+
+  <template id="tpl-privacy">
+    <div data-eyebrow="Legal">
+      <h2 class="reveal-d">Política de <em>privacidad.</em></h2>
+      <p class="d-sub reveal-d">Cómo tratamos tus datos personales.</p>
+      <p class="reveal-d">De acuerdo con el Reglamento (UE) 2016/679 (RGPD) y la Ley Orgánica 3/2018, de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD), te informamos sobre el tratamiento de tus datos.</p>
+      <h4 class="reveal-d">Responsable del tratamiento</h4>
+      <p class="reveal-d">Marta Marina <span class="dim">[NIF]</span> · <a class="link-underline" href="mailto:hola@martamarina.com">hola@martamarina.com</a>.</p>
+      <h4 class="reveal-d">Datos que recogemos y finalidad</h4>
+      <ul class="reveal-d">
+        <li><b>Formulario de contacto:</b> nombre, email y mensaje, para atender tu consulta.</li>
+        <li><b>Suscripción a newsletter:</b> email, para enviarte comunicaciones sobre MusicMind.</li>
+      </ul>
+      <h4 class="reveal-d">Legitimación</h4>
+      <p class="reveal-d">El tratamiento se basa en tu consentimiento, que otorgas al enviar cualquiera de los formularios. Puedes retirarlo en cualquier momento.</p>
+      <h4 class="reveal-d">Conservación</h4>
+      <p class="reveal-d">Conservamos tus datos mientras dure la relación o hasta que solicites su supresión. Los datos de la newsletter, hasta que te des de baja.</p>
+      <h4 class="reveal-d">Destinatarios</h4>
+      <p class="reveal-d">No cedemos tus datos a terceros salvo obligación legal. Los proveedores tecnológicos que dan soporte al sitio (correo, alojamiento) actúan como encargados del tratamiento con las debidas garantías.</p>
+      <h4 class="reveal-d">Tus derechos</h4>
+      <p class="reveal-d">Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad escribiendo a <a class="link-underline" href="mailto:hola@martamarina.com">hola@martamarina.com</a>. También puedes reclamar ante la Agencia Española de Protección de Datos (<span class="dim">aepd.es</span>).</p>
+      <p class="reveal-d dim">Última actualización: julio de 2026.</p>
+    </div>
+  </template>
+
+  <template id="tpl-cookies">
+    <div data-eyebrow="Legal">
+      <h2 class="reveal-d">Política de <em>cookies.</em></h2>
+      <p class="d-sub reveal-d">Qué cookies usamos y para qué.</p>
+      <p class="reveal-d">Una cookie es un pequeño archivo que se almacena en tu dispositivo al visitar una web. Esta política cumple con el artículo 22.2 de la LSSI-CE y con el RGPD.</p>
+      <h4 class="reveal-d">Cookies que utilizamos</h4>
+      <ul class="reveal-d">
+        <li><b>Técnicas / necesarias:</b> imprescindibles para el funcionamiento del sitio. Guardamos tu preferencia de consentimiento de cookies en el almacenamiento local del navegador. Están exentas de consentimiento.</li>
+        <li><b>Analíticas y de terceros:</b> este sitio <b>no utiliza</b> cookies de analítica, publicidad ni redes sociales que requieran tu consentimiento. Si en el futuro se incorporasen, se solicitaría tu autorización previa.</li>
+      </ul>
+      <h4 class="reveal-d">Gestión y desactivación</h4>
+      <p class="reveal-d">Puedes aceptar o rechazar las cookies no esenciales desde el aviso que aparece al entrar. Además, puedes configurar o eliminar las cookies desde los ajustes de tu navegador en cualquier momento.</p>
+      <h4 class="reveal-d">Cambios</h4>
+      <p class="reveal-d">Podemos actualizar esta política para adaptarla a novedades legislativas o técnicas. Te recomendamos revisarla periódicamente.</p>
+      <p class="reveal-d dim">Última actualización: julio de 2026.</p>
     </div>
   </template>
 

@@ -37,19 +37,46 @@
     }, 250);
   }
 
-  /* ---------- Header scroll state + hide-on-scroll-down ---------- */
+  /* ---------- Unified scroll handler (header · parallax · progress) ---------- */
   const header = $('#header');
+  const progress = $('#progress');
+  const parallaxEls = $$('[data-parallax]');
   let lastY = window.scrollY;
-  const onScroll = () => {
+  let scrollTicking = false;
+
+  const onFrame = () => {
     const y = window.scrollY;
+
+    // header: condensed state + hide on scroll-down
     header.classList.toggle('scrolled', y > 30);
     if (!document.body.classList.contains('menu-open')) {
       if (y > lastY && y > 400) header.classList.add('hidden');
       else header.classList.remove('hidden');
     }
+
+    // scroll progress bar
+    if (progress) {
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      progress.style.transform = `scaleX(${h > 0 ? y / h : 0})`;
+    }
+
+    // parallax blobs
+    if (!reduceMotion) {
+      parallaxEls.forEach((el) => {
+        const speed = parseFloat(el.dataset.parallax) || 0.1;
+        el.style.transform = `translate3d(0, ${y * speed}px, 0)`;
+      });
+    }
+
     lastY = y;
+    scrollTicking = false;
+  };
+  const onScroll = () => {
+    if (!scrollTicking) { requestAnimationFrame(onFrame); scrollTicking = true; }
   };
   window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  onFrame();
 
   /* ---------- Mobile menu ---------- */
   const toggle = $('#navToggle');
@@ -79,23 +106,6 @@
     revealEls.forEach((el) => el.classList.add('in'));
   }
 
-  /* ---------- Parallax blobs ---------- */
-  const parallaxEls = $$('[data-parallax]');
-  if (parallaxEls.length && !reduceMotion) {
-    let ticking = false;
-    const update = () => {
-      const y = window.scrollY;
-      parallaxEls.forEach((el) => {
-        const speed = parseFloat(el.dataset.parallax) || 0.1;
-        el.style.transform = `translate3d(0, ${y * speed}px, 0)`;
-      });
-      ticking = false;
-    };
-    window.addEventListener('scroll', () => {
-      if (!ticking) { requestAnimationFrame(update); ticking = true; }
-    }, { passive: true });
-  }
-
   /* ---------- Magnetic buttons ---------- */
   if (!reduceMotion && window.matchMedia('(hover: hover)').matches) {
     $$('[data-magnetic]').forEach((el) => {
@@ -119,7 +129,12 @@
       entries.forEach((e) => {
         if (e.isIntersecting) {
           const id = e.target.id;
-          navAnchors.forEach((a) => a.style.opacity = a.getAttribute('href') === '#' + id ? '1' : '0.55');
+          navAnchors.forEach((a) => {
+            const active = a.getAttribute('href') === '#' + id;
+            a.style.opacity = active ? '1' : '0.55';
+            if (active) a.setAttribute('aria-current', 'true');
+            else a.removeAttribute('aria-current');
+          });
         }
       });
     }, { threshold: 0.5 });
@@ -130,6 +145,7 @@
      MODAL (wide, cinematic)
      ========================================================= */
   const overlay = $('#overlay');
+  const modalWrap = $('#modalWrap');
   const modal = $('#modal');
   const modalAside = $('#modalAside');
   const modalBody = $('#modalBody');
@@ -137,20 +153,47 @@
   const modalClose = $('#modalClose');
   let lastFocused = null;
 
-  const SYM_SVG = '<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">' +
-    '<path fill="#fff" d="M115.29,114.97l-.14-47.2-26.88,28.69c4.1,3.85,6.71,7.62,6.75,13.3.03,3.31-.93,6.23-3,8.88-5.97,7.66-17.3,7.72-23.19,1.03-2.62-2.98-4.01-6.72-3.81-10.57.31-5.89,3.22-8.78,6.86-12.89-.16-.19-26.84-28.7-26.84-28.7l-.24,47.58c0,2.38-1.83,3.85-3.94,4.63-2.72,1-7.59-.98-7.6-4.54l-.14-62.1c0-1.65,1.03-3.34,2.11-4.19,3.31-2.62,7.32-1.51,9.98,1.42l35.03,38.17,34.16-37.66c2.71-3.14,6.75-4.63,10.24-1.98,1.78,1.35,2.18,3.72,2.18,5.93l-.13,60.24c0,3.23-3.89,5.27-6.62,4.89-2.46-.35-4.8-2.11-4.81-4.92ZM80.09,102.94c-.41.02-4.93,3.38-4.76,7.07.1,2.28,1.64,3.77,3.35,4.34,1.96.65,4.01-.13,5.1-1.48,3.84-4.73-3.37-9.95-3.69-9.93Z"/>' +
-    '<circle fill="#CCC2B8" cx="80.2" cy="46.68" r="11.23"/></svg>';
-  const RINGS_SVG = '<svg class="rings" viewBox="0 0 400 400" fill="none" stroke="currentColor" stroke-width="0.8">' +
-    '<circle cx="200" cy="200" r="60"/><circle cx="200" cy="200" r="110"/><circle cx="200" cy="200" r="160"/><circle cx="200" cy="200" r="198"/>' +
-    '<line x1="200" y1="2" x2="200" y2="398"/><line x1="2" y1="200" x2="398" y2="200"/>' +
-    '<line x1="60" y1="60" x2="340" y2="340"/><line x1="340" y1="60" x2="60" y2="340"/></svg>';
+  /* Per-panel personality: width variant + accent colour (keeps it from feeling monotonous) */
+  const PANEL = {
+    p1:            { variant: 'pillar',  accent: '#2F4A55' }, // Identidad — deep ocean
+    p2:            { variant: 'pillar',  accent: '#5E7A87' }, // Coherencia — steel
+    p3:            { variant: 'pillar',  accent: '#A98D6B' }, // Valores — bronze
+    p4:            { variant: 'pillar',  accent: '#6E8A96' }, // Vínculo — dusty
+    p5:            { variant: 'pillar',  accent: '#3C5A5E' }, // Dirección — teal
+    'm-musicmind': { variant: 'wide',    accent: '#5E7A87' },
+    'm-marta':     { variant: 'wide',    accent: '#3C5A5E' },
+    prog1:         { variant: 'program', accent: '#A98D6B' },
+    prog2:         { variant: 'program', accent: '#5E7A87' },
+    prog3:         { variant: 'program', accent: '#3C5A5E' },
+    contact:       { variant: 'contact', accent: '#2F4A55' },
+    legal:         { variant: 'wide',    accent: '#3C5A5E' },
+    privacy:       { variant: 'wide',    accent: '#3C5A5E' },
+    cookies:       { variant: 'wide',    accent: '#3C5A5E' }
+  };
 
-  function buildFoot(footData) {
-    modalFoot.innerHTML = '';
+  const IG_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>';
+  const TT_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.3 2 1.5 3.4 3.5 3.6v2.5c-1.3.1-2.5-.3-3.6-.9v6.3c0 3.2-2.4 5.5-5.4 5.5C7.8 22 5.5 19.8 5.5 17c0-2.7 2.2-4.9 5-4.9.3 0 .6 0 .9.1v2.6c-.3-.1-.6-.2-.9-.2-1.3 0-2.3 1-2.3 2.3 0 1.3 1 2.3 2.3 2.3 1.4 0 2.5-1.1 2.5-2.7V3h3.5z"/></svg>';
+  const MAIL_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>';
+
+  // brand mark in dark ink (reads on the light drawer)
+  const MARK_SVG = '<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">' +
+    '<path fill="#2A363B" d="M115.29,114.97l-.14-47.2-26.88,28.69c4.1,3.85,6.71,7.62,6.75,13.3.03,3.31-.93,6.23-3,8.88-5.97,7.66-17.3,7.72-23.19,1.03-2.62-2.98-4.01-6.72-3.81-10.57.31-5.89,3.22-8.78,6.86-12.89-.16-.19-26.84-28.7-26.84-28.7l-.24,47.58c0,2.38-1.83,3.85-3.94,4.63-2.72,1-7.59-.98-7.6-4.54l-.14-62.1c0-1.65,1.03-3.34,2.11-4.19,3.31-2.62,7.32-1.51,9.98,1.42l35.03,38.17,34.16-37.66c2.71-3.14,6.75-4.63,10.24-1.98,1.78,1.35,2.18,3.72,2.18,5.93l-.13,60.24c0,3.23-3.89,5.27-6.62,4.89-2.46-.35-4.8-2.11-4.81-4.92ZM80.09,102.94c-.41.02-4.93,3.38-4.76,7.07.1,2.28,1.64,3.77,3.35,4.34,1.96.65,4.01-.13,5.1-1.48,3.84-4.73-3.37-9.95-3.69-9.93Z"/>' +
+    '<circle fill="#CCC2B8" cx="80.2" cy="46.68" r="11.23"/></svg>';
+
+  // sequential panels → wizard navigation (move through them without closing)
+  const GROUPS = [
+    ['p1', 'p2', 'p3', 'p4', 'p5'],
+    ['prog1', 'prog2', 'prog3']
+  ];
+  function groupOf(id) {
+    for (const list of GROUPS) { const i = list.indexOf(id); if (i > -1) return { list, index: i }; }
+    return null;
+  }
+  let currentId = null;
+
+  function buildFootInto(container, footData) {
     let items = [];
     try { items = footData ? JSON.parse(footData) : []; } catch (_) { items = []; }
-    if (!items.length) { modalFoot.style.display = 'none'; return; }
-    modalFoot.style.display = 'flex';
     items.forEach((it) => {
       const a = document.createElement('a');
       a.href = it.h || '#contacto';
@@ -160,36 +203,112 @@
         if ((it.h || '') === '#contacto') { e.preventDefault(); openModal('contact'); }
         else closeModal();
       });
-      modalFoot.appendChild(a);
+      container.appendChild(a);
     });
+    return items.length;
   }
 
-  function openModal(id) {
+  function buildWizard(group) {
+    const wrap = document.createElement('div');
+    wrap.className = 'wizard';
+
+    const pos = document.createElement('span');
+    pos.className = 'wizard__pos';
+    pos.innerHTML = '<b>' + String(group.index + 1).padStart(2, '0') + '</b> / ' + String(group.list.length).padStart(2, '0');
+
+    const dots = document.createElement('div');
+    dots.className = 'wizard__dots';
+    group.list.forEach((gid, idx) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', 'Ir al ' + (idx + 1));
+      if (idx === group.index) b.classList.add('on');
+      b.addEventListener('click', () => goToPanel(gid));
+      dots.appendChild(b);
+    });
+
+    const nav = document.createElement('div');
+    nav.className = 'wizard__nav';
+    const arrow = (dir, label, path) => {
+      const btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'wizard__arrow'; btn.setAttribute('aria-label', label);
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="' + path + '"/></svg>';
+      btn.addEventListener('click', () => step(dir));
+      return btn;
+    };
+    nav.appendChild(arrow(-1, 'Anterior', 'M10 2 4 8l6 6'));
+    nav.appendChild(arrow(1, 'Siguiente', 'M6 2l6 6-6 6'));
+
+    wrap.append(pos, dots, nav);
+    return wrap;
+  }
+
+  function buildBrand() {
+    const el = document.createElement('div');
+    el.className = 'p-brand';
+    el.innerHTML = '<span class="p-brand__name">Marta Marina · MusicMind</span>' +
+      '<div class="p-social">' +
+        '<a href="https://instagram.com/" target="_blank" rel="noopener" aria-label="Instagram">' + IG_SVG + '</a>' +
+        '<a href="https://tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok">' + TT_SVG + '</a>' +
+        '<a href="mailto:hola@martamarina.com" aria-label="Email">' + MAIL_SVG + '</a>' +
+      '</div>';
+    return el;
+  }
+
+  // fill header/body/footer for a panel id (no open animation)
+  function populate(id) {
     const tpl = document.getElementById('tpl-' + id);
-    if (!tpl) return;
-    const node = tpl.content.cloneNode(true);
-    const root = node.querySelector('div');
-
+    if (!tpl) return false;
+    const root = tpl.content.cloneNode(true).querySelector('div');
     const eyebrow = root.dataset.eyebrow || 'MusicMind';
-    const num = root.dataset.num || '';
+    const cfg = PANEL[id] || {};
+    const group = groupOf(id);
 
-    modalAside.className = 'modal__aside' + (num ? '' : ' no-num');
-    modalAside.innerHTML = RINGS_SVG +
-      `<span class="a-eyebrow">${eyebrow}</span>` +
-      `<span class="a-symbol">${SYM_SVG}</span>` +
-      (num ? `<span class="a-num">${num}</span>` : '');
+    modal.dataset.variant = cfg.variant || '';
+    modal.style.setProperty('--panel-accent', cfg.accent || '#5E7A87');
 
-    buildFoot(root.dataset.foot);
+    modalAside.className = 'modal__aside';
+    modalAside.innerHTML = '<span class="a-symbol">' + MARK_SVG + '</span>' +
+      '<span class="a-eyebrow">' + eyebrow + '</span>';
 
     modalBody.innerHTML = '';
     while (root.firstChild) modalBody.appendChild(root.firstChild);
     modalBody.scrollTop = 0;
 
+    modalFoot.innerHTML = '';
+    if (group) modalFoot.appendChild(buildWizard(group));
+    const cta = document.createElement('div');
+    cta.className = 'modal__cta';
+    if (buildFootInto(cta, root.dataset.foot)) modalFoot.appendChild(cta);
+    modalFoot.appendChild(buildBrand());
+
+    currentId = id;
+    return true;
+  }
+
+  function openModal(id) {
+    if (!populate(id)) return;
     lastFocused = document.activeElement;
     overlay.classList.add('open');
     modal.classList.add('open');
     document.body.classList.add('no-scroll');
     setTimeout(() => modalClose.focus(), 80);
+  }
+
+  // wizard: cross-fade to another panel within the same sequence
+  function goToPanel(id) {
+    if (id === currentId || !document.getElementById('tpl-' + id)) return;
+    if (reduceMotion) { populate(id); return; }
+    modalBody.classList.add('swapping');
+    setTimeout(() => {
+      populate(id);
+      modalBody.classList.remove('swapping');
+    }, 240);
+  }
+  function step(dir) {
+    const g = groupOf(currentId); if (!g) return;
+    const next = (g.index + dir + g.list.length) % g.list.length;
+    goToPanel(g.list[next]);
   }
 
   function closeModal() {
@@ -205,7 +324,12 @@
   overlay.addEventListener('click', closeModal);
   modalClose.addEventListener('click', closeModal);
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+    if (!modal.classList.contains('open')) return;
+    if (e.key === 'Escape') { closeModal(); return; }
+    if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && groupOf(currentId)) {
+      const t = e.target.tagName;
+      if (t !== 'INPUT' && t !== 'TEXTAREA') { e.preventDefault(); step(e.key === 'ArrowRight' ? 1 : -1); }
+    }
   });
   modal.addEventListener('keydown', (e) => {
     if (e.key !== 'Tab' || !modal.classList.contains('open')) return;
@@ -260,20 +384,6 @@
   }
 
   /* =========================================================
-     SCROLL PROGRESS
-     ========================================================= */
-  const progress = $('#progress');
-  if (progress) {
-    const setProg = () => {
-      const h = document.documentElement.scrollHeight - window.innerHeight;
-      progress.style.transform = `scaleX(${h > 0 ? window.scrollY / h : 0})`;
-    };
-    window.addEventListener('scroll', setProg, { passive: true });
-    window.addEventListener('resize', setProg);
-    setProg();
-  }
-
-  /* =========================================================
      COUNT-UP stats
      ========================================================= */
   $$('.marta__stats .st b').forEach((el) => {
@@ -301,59 +411,54 @@
   });
 
   /* =========================================================
-     BRAND STORY slider
+     CAROUSEL (scroll-snap · arrows · progress) — no autoplay
      ========================================================= */
-  (function story() {
-    const sec = $('#story');
-    if (!sec) return;
-    const phrases = $$('.story__phrase', sec);
-    const dotsWrap = $('#storyDots');
-    const countEl = $('#storyCount');
-    const prev = $('#storyPrev'), next = $('#storyNext');
-    const total = phrases.length;
-    let i = 0, timer = null, inView = true;
+  (function carousel() {
+    const track = $('#carTrack');
+    if (!track) return;
+    const prev = $('#carPrev'), next = $('#carNext');
+    const bar = $('#carBar');
 
-    phrases.forEach((_, idx) => {
-      const b = document.createElement('button');
-      b.setAttribute('aria-label', 'Ir a la frase ' + (idx + 1));
-      if (idx === 0) b.classList.add('on');
-      b.addEventListener('click', () => { go(idx); restart(); });
-      dotsWrap.appendChild(b);
+    // step = one card + gap, measured from the DOM so it survives responsive resizing
+    const step = () => {
+      const card = track.querySelector('.c-card');
+      if (!card) return track.clientWidth;
+      const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+      return card.getBoundingClientRect().width + gap;
+    };
+    const maxScroll = () => track.scrollWidth - track.clientWidth;
+
+    // reflect scroll position: disable arrows at the ends, size the progress bar
+    let ticking = false;
+    const sync = () => {
+      ticking = false;
+      const max = maxScroll();
+      const x = track.scrollLeft;
+      if (prev) prev.disabled = x <= 1;
+      if (next) next.disabled = x >= max - 1;
+      if (bar) {
+        // bar length tracks how much of the reel is on screen; position tracks scroll
+        const visible = track.clientWidth / track.scrollWidth;
+        const progressed = max > 0 ? x / max : 0;
+        bar.style.width = Math.min(visible, 1) * 100 + '%';
+        bar.style.transform = `translateX(${progressed * (100 / Math.min(visible, 1) - 100)}%)`;
+      }
+    };
+    const onScroll = () => { if (!ticking) { requestAnimationFrame(sync); ticking = true; } };
+
+    track.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+
+    prev && prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: reduceMotion ? 'auto' : 'smooth' }));
+    next && next.addEventListener('click', () => track.scrollBy({ left: step(), behavior: reduceMotion ? 'auto' : 'smooth' }));
+
+    // keyboard arrows when the reel itself is focused
+    track.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); track.scrollBy({ left: -step(), behavior: reduceMotion ? 'auto' : 'smooth' }); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); track.scrollBy({ left: step(), behavior: reduceMotion ? 'auto' : 'smooth' }); }
     });
-    const dots = $$('button', dotsWrap);
 
-    function go(n) {
-      i = (n + total) % total;
-      phrases.forEach((p, idx) => p.classList.toggle('active', idx === i));
-      dots.forEach((d, idx) => d.classList.toggle('on', idx === i));
-      countEl.textContent = String(i + 1).padStart(2, '0');
-      sec.dataset.active = String(i);
-    }
-    const adv = () => go(i + 1);
-    function start() { if (!reduceMotion && inView) timer = setInterval(adv, 4800); }
-    function stop() { if (timer) { clearInterval(timer); timer = null; } }
-    function restart() { stop(); start(); }
-
-    prev.addEventListener('click', () => { go(i - 1); restart(); });
-    next.addEventListener('click', () => { go(i + 1); restart(); });
-    sec.addEventListener('mouseenter', stop);
-    sec.addEventListener('mouseleave', start);
-
-    // swipe
-    let sx = null;
-    sec.addEventListener('pointerdown', (e) => { sx = e.clientX; });
-    sec.addEventListener('pointerup', (e) => {
-      if (sx === null) return;
-      const dx = e.clientX - sx;
-      if (Math.abs(dx) > 50) { go(i + (dx < 0 ? 1 : -1)); restart(); }
-      sx = null;
-    });
-
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver((ents) => ents.forEach((en) => {
-        inView = en.isIntersecting; inView ? start() : stop();
-      }), { threshold: 0.25 }).observe(sec);
-    } else { start(); }
+    sync();
   })();
 
   /* =========================================================
@@ -460,6 +565,33 @@
         cbtn.innerHTML = orig;
       }
     });
+  }
+
+  /* ---------- Cookie consent ---------- */
+  const cookieBar = $('#cookie');
+  if (cookieBar) {
+    const KEY = 'mm-cookie-consent';
+    let stored = null;
+    try { stored = localStorage.getItem(KEY); } catch (_) {}
+
+    const hideBar = () => {
+      cookieBar.classList.remove('show');
+      setTimeout(() => { cookieBar.hidden = true; }, 600);
+    };
+    const setChoice = (value) => {
+      try { localStorage.setItem(KEY, value); } catch (_) {}
+      hideBar();
+    };
+
+    if (!stored) {
+      cookieBar.hidden = false;
+      setTimeout(() => cookieBar.classList.add('show'), 900);
+    }
+
+    const accept = $('#cookieAccept');
+    const reject = $('#cookieReject');
+    if (accept) accept.addEventListener('click', () => setChoice('accepted'));
+    if (reject) reject.addEventListener('click', () => setChoice('rejected'));
   }
 
 })();
