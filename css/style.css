@@ -396,7 +396,7 @@ body.menu-open .nav__toggle span:nth-child(3) { top: 8px; transform: rotate(-45d
 
 .levels__stage { position: relative; }
 .lvpanel {
-  border-top: 1px solid var(--line); padding-top: 34px;
+  border-top: 1px solid var(--line); padding-top: 34px; padding-bottom: 44px;
   display: flex; align-items: flex-start; gap: clamp(20px, 5vw, 64px);
 }
 .lvpanel[hidden] { display: none; }
