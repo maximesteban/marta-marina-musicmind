@@ -906,4 +906,36 @@
     }
   }
 
+  /* =========================================================
+     LEVELS pills (método · 3 niveles de comunicación)
+     ========================================================= */
+  (function levels() {
+    const root = document.getElementById('levels');
+    if (!root) return;
+    const pills = Array.from(root.querySelectorAll('.lvpill'));
+    const panels = Array.from(root.querySelectorAll('.lvpanel'));
+    const show = (i) => {
+      pills.forEach((p, idx) => {
+        const on = idx === i;
+        p.classList.toggle('is-on', on);
+        p.setAttribute('aria-selected', String(on));
+        p.tabIndex = on ? 0 : -1;
+      });
+      panels.forEach((pan, idx) => {
+        const on = idx === i;
+        pan.hidden = !on;
+        if (on) { pan.classList.remove('is-on'); void pan.offsetWidth; pan.classList.add('is-on'); }
+      });
+    };
+    pills.forEach((p, i) => {
+      p.addEventListener('click', () => show(i));
+      p.addEventListener('keydown', (e) => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        e.preventDefault();
+        const next = (i + (e.key === 'ArrowRight' ? 1 : -1) + pills.length) % pills.length;
+        show(next); pills[next].focus();
+      });
+    });
+  })();
+
 })();
